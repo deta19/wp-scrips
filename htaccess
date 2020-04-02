@@ -1,0 +1,9 @@
+RewriteEngine On
+# Redirect all "not correct" domain to www with https
+# (is not important if comes with or without https):
+RewriteCond %{HTTP_HOST} !^www.domain.com$ [NC]
+RewriteRule ^(.*)$ https://www.domain.com/$1 [L,R=301]
+
+# Redirect all non-ssl to ssl.
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://www.domain.com/$1 [L,R=301]
