@@ -157,3 +157,52 @@ function wpse34410_init()
     $types = get_post_types( [], 'objects' );
    // print_r($types);
 }
+
+
+/*add article microdata to articles*/
+
+function article_schemaorg() {
+    if( is_single() && 'post' == get_post_type() ) {
+        global $post;
+        $author = get_the_author();
+        $post_image = get_the_post_thumbnail_url();
+
+        echo '<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "author": [{
+            "@type": "Person",
+            "name": "'.$author.'"
+        }],
+  "interactionStatistic": [
+    {
+      "@type": "InteractionCounter",
+      "interactionService": {
+        "@type": "WebSite",
+        "name": "Twitter",
+        "url": "http://www.twitter.com"
+      },
+      "interactionType": "http://schema.org/ShareAction",
+      "userInteractionCount": "1203"
+    }
+  ],
+  "datePublished": "'. $post->post_date.'",
+  "dateModified": "'. $post->post_modified.'",
+  "headline": "'. $post->post_title .'",
+  "image": "yoursite_url_logohere_or_featuredimage",
+  "name": "'. $post->post_title .'",
+  "publisher": {
+    "@type": "Organization",
+    "name": "yoursitehere",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "yoursite_url_here"
+    }
+  }
+}
+</script>';
+
+    }
+}
+add_action('wp_footer', 'article_schemaorg');
