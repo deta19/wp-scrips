@@ -206,3 +206,135 @@ function article_schemaorg() {
     }
 }
 add_action('wp_footer', 'article_schemaorg');
+
+
+/* add schemaorg json for breadcrumbs and there is no need for the html */
+function breadcrumbs_schemaorg() {
+
+	if( !is_front_page() ) {
+        global $post;
+		$i=0;
+		$breadcrumb_elements = '{
+			   "@type": "ListItem",
+			   "position": '.($i+1).',
+			   "item":
+			   {
+			    "@id": "'.get_site_url().'",
+			    "name": "BusinessLease"
+			    }
+			  },';
+		$i = $i+1;
+
+ 		if( $post->post_parent ) {
+ 			$breadcrumb_elements .= '{
+ 			   "@type": "ListItem",
+ 			   "position": '.($i+1).',
+ 			   "item":
+ 			   {
+ 			    "@id": "'.get_permalink( $post->post_parent ).'",
+ 			    "name": "'.get_the_title( $post->post_parent ).'"
+ 			    }
+ 			  },';
+			$i = $i+1;
+ 		}
+		
+		$breadcrumb_elements .= '{
+			   "@type": "ListItem",
+			   "position": '.($i+1).',
+			   "item":
+			   {
+			    "@id": "'.get_permalink($post->ID).'",
+			    "name": "'.$post->post_title.'"
+			    }
+			  }';
+	
+			echo '<script type="application/ld+json">
+				{
+				 "@context": "http://schema.org",
+				 "@type": "BreadcrumbList",
+				 "itemListElement":
+				 [
+				  '.$breadcrumb_elements.'
+				 ]
+				}
+			</script>';
+		
+		}
+	
+
+}
+add_action('wp_footer', 'breadcrumbs_schemaorg');
+
+
+/* a more complexte  sceham org for articles */
+function blogarticle_schemaorg() {
+	
+    if( is_single() && 'post' == get_post_type() ) {
+        global $post;
+        $author = get_the_author();
+        $post_image = get_the_post_thumbnail_url();
+				
+        echo '<script type="application/ld+json">
+	{
+		"@context":"http://schema.org",
+		"@type": "BlogPosting",
+		"image": "'.$post_image.'",
+		"url": "'.get_permalink($post->ID).'",
+		"headline": "'.$post->post_title.'",
+		"alternativeHeadline": "'.$post->post_title.'",
+		"dateCreated": "'. $post->post_date.'",
+		"datePublished": "'. $post->post_date.'",
+		"dateModified": "'.$post->post_modified.'",
+		"inLanguage": "'.get_locale().'",
+		"isFamilyFriendly": "true",
+		"copyrightYear": "'.date("Y", strtotime($post->post_modified) ).'",
+		"copyrightHolder": "",
+		"contentLocation": {
+			"@type": "Place",
+			"name": ""
+		},
+		"accountablePerson": {
+			"@type": "Person",
+			"name": "'.$author.'"
+		},
+		"author": {
+			"@type": "Person",
+			"name": "'.$author.'"
+		},
+		"creator": {
+			"@type": "Person",
+			"name": "'.$author.'"
+		},
+		"publisher": {
+			"@type": "Organization",
+			"name": "'.$author.'",
+			"logo": {
+				"@type": "ImageObject",
+				"url": "'.get_site_url().'/wp-content/uploads/logo.png",
+				"width":"400",
+				"height":"55"
+			}
+		},
+		"sponsor": {
+			"@type": "Organization",
+			"name": "sitename",
+			"url": "'.get_site_url().'",
+			"logo": {
+				"@type": "ImageObject",
+				"url": "'.get_site_url().'/wp-content/uploads/logo.png"
+			}
+		},
+		"mainEntityOfPage": "True",
+		"keywords": [
+			""
+		],
+		"genre":["SEO","JSON-LD"],
+		"articleSection": "",
+		"articleBody": "'.wp_strip_all_tags( $post->post_content ).'"
+	}
+</script>';
+
+    }
+
+}
+add_action('wp_footer', 'blogarticle_schemaorg');
