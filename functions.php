@@ -353,3 +353,13 @@ function wpb_sender_name( $original_email_from ) {
 // Hooking up our functions to WordPress filters 
 add_filter( 'wp_mail_from', 'wpb_sender_email' );
 add_filter( 'wp_mail_from_name', 'wpb_sender_name' );
+
+
+// polylang language switcher
+ pll_the_languages( array( 
+                                'dropdown' => 1,
+                                'show_names' => 1,
+                                'show_flags' => 0,
+                                'hide_current' => 1, 
+                            )
+                        );
