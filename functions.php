@@ -418,6 +418,27 @@ function similar_articles_func( $atts ){
 					}
 				?>
 			</div>
+			<style>
+			/*move in your style.css file*/
+				
+			#similar_posts .head_title {
+			    font-size: 1.61rem;
+			    color: #124a2f;
+			    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+			    font-weight: 500;
+			    line-height: 1.2;
+			}
+
+			#similar_posts .img {
+				width: 100%;
+				height: auto;
+			}
+
+			#similar_posts .title {
+				font-size: 16px;
+				font-weight: 700;
+			}
+			</style>
 			<script type="text/javascript">
 				jQuery(document).ready(function() {
 
