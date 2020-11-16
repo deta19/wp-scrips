@@ -474,3 +474,180 @@ function similar_articles_func( $atts ){
 
 }
 add_shortcode( 'similar_articles', 'similar_articles_func' );
+
+/* Slider with similar products rom a category that you select in the post you read*/
+//add meta box in posts to connect to products
+	function products_add_custom_box() {
+	    $screens = [ 'post' ];
+	    foreach ( $screens as $screen ) {
+	        add_meta_box(
+	            'products',                 // Unique ID
+	            'Produse relevante',      // Box title
+	            'products_custom_box_html',  // Content callback, must be of type callable
+	            $screen                            // Post type
+	        );
+	    }
+	}
+	add_action( 'add_meta_boxes', 'products_add_custom_box' );
+
+	function products_custom_box_html( $post ) {
+		$values = get_post_meta( $post->ID, 'products' );
+
+		$args = array(
+				'post_type'             => 'product',
+				'post_status'           => 'publish',
+		); 
+
+		$categories = get_terms( 'product_cat', $args );
+
+		$selected = ( isset( $values ) && !empty($values) )  ? esc_attr( $values[0] ) : '';
+
+		wp_nonce_field( 'products', 'products_nonce' );
+		    ?>
+		    <p>Alegeti din ce categorie sa fie preluate produsele in sliderul "Produse relevante" pentru acest articol.</p>
+		    <p>
+		        <label for="products">Categorie produse</label>
+		        <select name="products" id="products">
+		           <?php 
+			        	foreach ($categories as $key => $category) {
+
+					?>
+					<option value="<?php echo $category->term_id; ?>" 
+	        			 <?php selected( $selected, $category->term_id ); ?>>
+	        			<?php echo $category->name; ?>
+	    			</option>
+
+					<?php
+			        	}
+			        ?>
+		        </select>
+
+		    </p>
+	    <?php    
+
+	}
+
+	function products_save_postdata( $post_id ) {
+
+		// Bail if we're doing an auto save
+	    if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+
+	    // if our nonce isn't there, or we can't verify it, bail
+	    if( !isset( $_POST['products_nonce'] ) || !wp_verify_nonce( $_POST['products_nonce'], 'products' ) ) return;
+	     
+	    // if our current user can't edit this post, bail
+	    if( !current_user_can( 'edit_post' ) ) return;
+
+	    //actual save data
+	    if( isset( $_POST['products'] ) )
+	        update_post_meta( $post_id, 'products', esc_attr( $_POST['products'] ) );
+	        
+	    
+	}
+	add_action( 'save_post', 'products_save_postdata' );
+
+
+	//[products_related]
+	function products_related_func( $atts ) {
+
+		$product_category = get_post_meta( get_the_ID(), 'products', true );
+
+		if( empty($product_category) ) {
+			return false;
+		}
+
+		$args = array( 
+			'numberposts' => 8,
+			'tax_query' => array(
+							      array(
+							          'taxonomy' => 'product_cat',
+									  'field' => 'id',
+									  'terms' => $product_category
+						          	)
+						       ),
+			'post_type' => 'product',
+			'post_status' => 'publish'
+		);
+		$products = new WP_Query( $args );
+
+		if ( $products->have_posts() ) {
+
+					?>
+			<div id="similar_products">
+				<div class="head_title"><?php echo __('Produse recomandate:', 'organix'); ?></div>
+				<div class="similar_products owl-carousel owl-theme">
+					<?php 
+						while ( $products->have_posts() ) {
+							$products->the_post();
+							$post_image = get_the_post_thumbnail_url( get_the_ID() );
+					?>
+						<div class="item">
+							<a href="<?php echo get_permalink( get_the_ID() ); ?>">
+								<img src="<?php echo $post_image; ?>" width="150" height="auto" class="img">
+								<div class="title">
+									<?php  
+										echo get_the_title();
+									?>
+								</div>
+							</a>
+						</div>
+					<?php 
+						}
+					?>
+				</div>
+				<style type="text/css">
+					#similar_products .head_title {
+					    font-size: 1.61rem;
+					    color: #124a2f;
+					    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+					    font-weight: 500;
+					    line-height: 1.2;
+					}
+
+					#similar_products .img {
+						width: 100%;
+						height: auto;
+					}
+
+					#similar_products .title {
+						font-size: 14px;
+						font-weight: 700;
+						line-height: 16px;
+					}
+
+				</style>
+				<script type="text/javascript">
+					jQuery(document).ready(function() {
+
+						jQuery('.similar_products').owlCarousel({
+						    loop:true,
+						    margin:10,
+						    responsiveClass:true,
+						    responsive:{
+						        0:{
+						            items:1,
+						            nav:true
+						        },
+						        600:{
+						            items:3,
+						            nav:false
+						        },
+						        1000:{
+						            items:5,
+						            nav:true,
+						            loop:false
+						        }
+						    }
+						})
+
+					})
+
+				</script>
+			</div>	
+		<?php
+		}
+
+		wp_reset_postdata();
+
+	}
+	add_shortcode( 'products_related', 'products_related_func' );
