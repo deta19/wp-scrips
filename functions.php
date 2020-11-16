@@ -363,3 +363,93 @@ add_filter( 'wp_mail_from_name', 'wpb_sender_name' );
                                 'hide_current' => 1, 
                             )
                         );
+
+
+// Shortcode to creata a owl carousel with similar posts, taht can be used in article page
+//[similar_articles]
+function similar_articles_func( $atts ){
+	$current_post_categories = get_the_category( get_the_ID() );
+	$cats = '';
+
+	if( empty($current_post_categories) ) {
+		return false;
+	}
+
+
+	foreach ($current_post_categories as $key => $category) {
+		if ( $key < count($current_post_categories) - 1 ) {
+			$cats .= $category->term_id . ", ";
+
+		}else{
+			$cats .= $category->term_id;
+		}
+	}
+
+	$args = array( 
+		'post_type'   => 'post',
+		'cat' => $cats,
+		'post_status' => 'publish'
+	);
+	$posts = new WP_Query( $args );
+
+	if ( $posts->have_posts() ) {
+
+				?>
+		<div id="similar_posts">
+			<div class="head_title"><?php echo __('Ai putea fi interesat si de:', 'organix'); ?></div>
+			<div class="similar_articless owl-carousel owl-theme">
+				<?php 
+					while ( $posts->have_posts() ) {
+						$posts->the_post();
+
+						$post_image = get_the_post_thumbnail_url( get_the_ID() );
+				?>
+					<div class="item">
+						<a href="<?php echo get_permalink( get_the_ID() ); ?>">
+							<img src="<?php echo $post_image; ?>" width="150" height="auto" class="img">
+							<div class="title">
+								<?php  
+									echo get_the_title();
+								?>
+							</div>
+						</a>
+					</div>
+				<?php 
+					}
+				?>
+			</div>
+			<script type="text/javascript">
+				jQuery(document).ready(function() {
+
+					jQuery('.similar_articless').owlCarousel({
+					    loop:true,
+					    margin:10,
+					    responsiveClass:true,
+					    responsive:{
+					        0:{
+					            items:1,
+					            nav:true
+					        },
+					        600:{
+					            items:3,
+					            nav:false
+					        },
+					        1000:{
+					            items:5,
+					            nav:true,
+					            loop:false
+					        }
+					    }
+					})
+
+				})
+
+			</script>
+		</div>	
+	<?php
+	}
+
+	wp_reset_postdata();
+
+}
+add_shortcode( 'similar_articles', 'similar_articles_func' );
