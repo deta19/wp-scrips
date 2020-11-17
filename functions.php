@@ -651,3 +651,27 @@ add_shortcode( 'similar_articles', 'similar_articles_func' );
 
 	}
 	add_shortcode( 'products_related', 'products_related_func' );
+
+/*Woocommece product category, Change yoast meta decription based on category , if is aprent or child */
+function change_yoast_desc( $desc , $presentation ) {
+
+	$queried_object = get_queried_object();
+	$term_id = $queried_object->term_id;
+
+	if( !empty($queried_object)) {
+		if ( $queried_object->taxonomy == 'product_cat' ) {
+			if ( $queried_object->parent > 0) {
+				//child
+				$parent = get_term( $queried_object->parent );
+				$desc = 'Alege '.$queried_object->name.' produse '.$parent->name.' pentru sanatatea ta.';
+			}else{
+				$desc = 'Alege dintre '.$queried_object->name.' naturiste si bio pentru sanatatea ta.';
+			}
+		}
+	}
+
+	return $desc;
+
+}
+
+add_filter( 'wpseo_metadesc', 'change_yoast_desc', 10, 2);
