@@ -707,3 +707,16 @@ add_filter( 'wpseo_sitemap_entries_per_page', 'max_entries_per_sitemap' );
 add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', function () {
   return array( 4);
 } );
+
+
+/* this removed the shop link from the product sitemap*/
+add_filter( 'wpseo_sitemap_post_type_archive_link', 'my_wpseo_cpt_archive_link', 10, 2);
+ 
+function my_wpseo_cpt_archive_link( $link, $post_type ) {
+
+        // Disable product/post archives in the sitemaps
+        if ( $post_type === 'product' )
+                return false;
+
+        return $link;
+}
