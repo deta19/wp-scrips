@@ -675,3 +675,35 @@ function change_yoast_desc( $desc , $presentation ) {
 }
 
 add_filter( 'wpseo_metadesc', 'change_yoast_desc', 10, 2);
+
+
+// define the wpseo_xml_sitemap_post_url callback 
+add_filter( 'wpseo_xml_sitemap_post_url', 'filter_function_name_6354', 10, 2 );
+function filter_function_name_6354( $url, $post ){
+	// works with page, articles but 
+	//		doesn't work with taxonomy sitemaps
+    $slugs = array(
+    	"domain/product-tag/tagtwo/"
+    );
+
+    if ( $url !== $slugs[0]  ) {
+    	return $url; 
+    }
+};
+/* Exclude One Content Type From Yoast SEO Sitemap */
+/* Exclude One Taxonomy From Yoast SEO Sitemap */
+function sitemap_exclude_taxonomy( $value, $taxonomy ) {
+	//if ( $taxonomy == 'product_tag' ) return true;
+}
+add_filter( 'wpseo_sitemap_exclude_taxonomy', 'sitemap_exclude_taxonomy', 10, 2 );
+
+function max_entries_per_sitemap() {
+    return 10000;
+}
+
+add_filter( 'wpseo_sitemap_entries_per_page', 'max_entries_per_sitemap' );
+// }
+
+add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', function () {
+  return array( 4);
+} );
