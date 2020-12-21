@@ -720,3 +720,16 @@ function my_wpseo_cpt_archive_link( $link, $post_type ) {
 
         return $link;
 }
+
+//exclude link  from any yoast generated sitemap
+add_filter('wpseo_sitemap_entry', 'exclude_link', 20, 1);
+function exclude_link( $url ) {
+	$url_array = array(
+'http://127.0.0.1/wordpress4517/product-tag/tagone/',
+
+	);
+
+	if( !in_array($url['loc'], $url_array) ) {
+		return $string;
+	}
+}
