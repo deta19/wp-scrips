@@ -733,3 +733,91 @@ function exclude_link( $url ) {
 		return $string;
 	}
 }
+/*
+Redirect to Checkout on add to cart
+First in WooCommerce > Product Settings > Product tab uncheck these options:
+Redirect to the cart page after successful addition
+Enable AJAX add to cart buttons on archives
+Then use this code:
+*/
+add_filter( 'woocommerce_add_to_cart_redirect', 'goya_custom_redirect_checkout_add_cart' );
+function goya_custom_redirect_checkout_add_cart() {
+  return wc_get_checkout_url();
+}
+
+/*
+Remove Additional Information tab
+*/
+add_filter( 'woocommerce_product_tabs', 'goya_custom_remove_product_tabs', 9999 );
+function goya_custom_remove_product_tabs( $tabs ) {
+  unset( $tabs['additional_information'] );
+  return $tabs;
+}
+/*
+Remove Description tab if empty
+*/
+add_filter( 'woocommerce_product_tabs', 'goya_custom_product_remove_empty_tabs', 20, 1 );
+
+function goya_custom_product_remove_empty_tabs( $tabs ) {
+ if ( ! empty( $tabs ) ) {
+  foreach ( $tabs as $title => $tab ) {
+   if ( $title == 'description' && empty( $tab['content'] ) ) {
+    unset( $tabs[ $title ] );
+   }
+  }
+ }
+ return $tabs;
+}
+/**
+Change product tabs titles
+*/
+add_filter( 'woocommerce_product_tabs', 'woo_customize_tabs' );
+function woo_customize_tabs( $tabs ) {
+ $tabs['description']['title'] = __( 'Custom Name' );
+ return $tabs;
+}
+/*
+Limit the product title on catalog pages
+If your products have very long titles you can make them short for catalog pages only. The product page will show the full name.
+*/
+add_filter( 'the_title', 'custom_shorten_woo_product_title', 10, 2 );
+function custom_shorten_woo_product_title( $title, $id ) {
+ if ( ! is_singular( array( 'product' ) ) && get_post_type( $id ) === 'product' ) {
+  return wp_trim_words( $title, 3, '...' ); // change last number to the number of words you want
+ } else {
+  return $title;
+ }
+}
+/*
+Auto refresh totals on quantity change
+The cart page doesn’t refresh automatically on cart page. However, it’s possible to make it automatic.
+*/
+add_action( 'wp_footer', 'custom_cart_update_on_quantity_change' );
+function custom_cart_update_on_quantity_change() {
+ if (is_cart()) :
+ ?>
+ <script>
+  jQuery('div.woocommerce').on('change', '.woocommerce-cart-form .qty', function(){
+   jQuery("[name='update_cart']").prop("disabled", false);
+   jQuery("[name='update_cart']").trigger("click"); 
+  });
+ </script>
+ <?php
+ endif;
+}
+
+/*
+Show images in order details page
+*/
+add_filter( 'woocommerce_order_item_name', 'custom_order_display_product_image', 20, 3 );
+function custom_order_display_product_image( $item_name, $item, $is_visible ) {
+  // Targeting view order pages only
+  if( is_wc_endpoint_url( 'view-order' ) ) {
+    $product   = $item->get_product();
+    $thumbnail = $product->get_image('thumbnail');
+  if( $product->get_image_id() > 0 ) {
+    $item_name = '<div class="item-thumbnail">' . $thumbnail . '</div>' . $item_name;
+  }
+ }
+ return $item_name;
+}
