@@ -821,3 +821,18 @@ function custom_order_display_product_image( $item_name, $item, $is_visible ) {
  }
  return $item_name;
 }
+
+
+/**
+* Woocommerce catalog mode
+* @snippet     Hide Price & Add to Cart for Logged Out Users
+*/
+  
+add_action( 'init', 'woocommrece_catalog_mode' );
+  
+function woocommrece_catalog_mode() {
+	remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
+	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
+}
