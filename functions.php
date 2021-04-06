@@ -836,3 +836,54 @@ function woocommrece_catalog_mode() {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
 }
+
+
+/*
+*  yoast reset indexing 
+*     add and run the function in your functions.php from the theme. 
+*   This is meant for people who have a lower version of wordpress and the plugin Yoast Test Helper doesn;t install.
+* theese lines are from that plugin and a little bit changed.
+*  after running this function you need to visit a page so that yoast will recreate its tables and start indexing stuff again.
+**/
+   
+function reset_indexables() {
+    global $wpdb;
+
+
+echo "test";
+die; //remove after you sure you're on the corect place
+
+    // Reset the prominent words calculation.
+    $wpdb->delete( $wpdb->prefix . 'postmeta', [ 'meta_key' => '_yst_prominent_words_version' ] );
+
+    WPSEO_Options::set( 'prominent_words_indexing_completed', false );
+    \delete_transient( 'total_unindexed_prominent_words' );
+
+
+    // Reset the internal link count.
+    \delete_transient( 'wpseo_unindexed_post_link_count' );
+    \delete_transient( 'wpseo_unindexed_term_link_count' );
+
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.SchemaChange -- We know what we're doing. Really.
+    $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'yoast_indexable' );
+    $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'yoast_indexable_hierarchy' );
+    $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'yoast_migrations' );
+    $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'yoast_primary_term' );
+    $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'yoast_seo_links' );
+
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.SchemaChange
+
+    WPSEO_Options::set( 'indexing_started', null );
+    WPSEO_Options::set( 'indexables_indexing_completed', false );
+    WPSEO_Options::set( 'indexing_first_time', true );
+
+    // Found in Indexable_Post_Indexation_Action::TRANSIENT_CACHE_KEY.
+    \delete_transient( 'wpseo_total_unindexed_posts' );
+    // Found in Indexable_Post_Type_Archive_Indexation_Action::TRANSIENT_CACHE_KEY.
+    \delete_transient( 'wpseo_total_unindexed_post_type_archives' );
+    // Found in Indexable_Term_Indexation_Action::TRANSIENT_CACHE_KEY.
+    \delete_transient( 'wpseo_total_unindexed_terms' );
+
+    \delete_option( 'yoast_migrations_premium' );
+    return \delete_option( 'yoast_migrations_free' );
+}
