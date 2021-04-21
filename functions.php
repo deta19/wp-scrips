@@ -887,3 +887,45 @@ die; //remove after you sure you're on the corect place
     \delete_option( 'yoast_migrations_premium' );
     return \delete_option( 'yoast_migrations_free' );
 }
+
+/*
+* add custom fields to users admin page
+*/
+function extra_profile_fields( $user ) { 
+	$pages = get_pages();
+	?>
+   
+    <h3><?php _e('Extra User Details'); ?></h3>
+    <table class="form-table">
+        <tr>
+            <th><label for="estrafield">estrafield</label></th>
+            <td>
+            	<select name="estrafield" id="estrafield">
+            		<option value="volvo">-</option>
+            		<?php foreach ( $pages as $key => $page ) { ?>
+						<option value="<?php echo $page->ID; ?>" <?php echo (get_the_author_meta( 'estrafield', $user->ID ) == $page->ID)? 'selected="selected"':''; ?>><?php echo $page->post_name; ?></option>
+            		<?php } ?>
+            	</select><br />
+            </td>
+        </tr>
+    </table>
+    <tt>In cazul utilizatorilor de tip "specialist", alegeti de aici specialistul pentru care se creeaza contul.</tt>
+<?php
+
+}
+
+// Then we hook the function to "show_user_profile" and "edit_user_profile"
+add_action( 'show_user_profile', 'extra_profile_fields', 10 );
+add_action( 'edit_user_profile', 'extra_profile_fields', 10 );
+
+function save_extra_profile_fields( $user_id ) {
+
+    if ( !current_user_can( 'edit_user', $user_id ) )
+        return false;
+
+    /* Edit the following lines according to your set fields */
+    update_usermeta( $user_id, 'estrafield', $_POST['estrafield'] );
+}
+
+add_action( 'personal_options_update', 'save_extra_profile_fields' );
+add_action( 'edit_user_profile_update', 'save_extra_profile_fields' );
