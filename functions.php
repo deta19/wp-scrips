@@ -929,3 +929,13 @@ function save_extra_profile_fields( $user_id ) {
 
 add_action( 'personal_options_update', 'save_extra_profile_fields' );
 add_action( 'edit_user_profile_update', 'save_extra_profile_fields' );
+
+
+function yoast_seo_canonical_change( $canonical ) {
+    if ( is_paged() ) {
+        $current_link = home_url() . $_SERVER['REQUEST_URI'];
+        return substr($current_link, 0, strpos( $current_link , 'page' ) );
+    }
+    return $canonical;
+}
+add_filter( 'wpseo_canonical', 'yoast_seo_canonical_change', 10, 1 );
