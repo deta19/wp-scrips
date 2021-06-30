@@ -931,6 +931,32 @@ add_action( 'personal_options_update', 'save_extra_profile_fields' );
 add_action( 'edit_user_profile_update', 'save_extra_profile_fields' );
 
 
+/*
+* add alt to images in all woocommerce products
+*
+*/
+add_filter('wp_get_attachment_image_attributes', 'change_attachement_image_attributes', 20, 2);
+function change_attachement_image_attributes( $attr, $attachment ){
+
+    // Get post parent
+    $parent = get_post_field( 'post_parent', $attachment);
+
+    // Get post type to check if it's product
+    $type = get_post_field( 'post_type', $parent);
+    if( $type != 'product' ){
+        return $attr;
+    }
+
+    /// Get title
+    $title = get_post_field( 'post_title', $parent);
+
+    $attr['alt'] = $title . ' - Mayore';
+    $attr['title'] = $title .' - Mayore';
+
+    return $attr;
+}
+
+
 function yoast_seo_canonical_change( $canonical ) {
     if ( is_paged() ) {
         $current_link = home_url() . $_SERVER['REQUEST_URI'];
