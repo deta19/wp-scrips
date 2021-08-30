@@ -965,3 +965,39 @@ function yoast_seo_canonical_change( $canonical ) {
     return $canonical;
 }
 add_filter( 'wpseo_canonical', 'yoast_seo_canonical_change', 10, 1 );
+
+//Ajax stuff
+$title_nonce = wp_create_nonce( 'cstm_car_instal_calc' );
+	wp_localize_script(
+	    'your-javascript_script_js',
+	    'my_ajax_obj',
+	    array(
+	        'ajax_url' => admin_url( 'admin-ajax.php' ),
+	        'nonce'    => $title_nonce,
+	    )
+	);
+
+
+//javscript file
+		$.post(
+			my_ajax_obj.ajax_url, 
+			{         //POST request
+				_ajax_nonce: my_ajax_obj.nonce,     //nonce
+				action: "calculator_offer",            //action
+				data: {data: data}                 //data
+			}, function(data) {   
+// console.log(data);
+// return;   
+				result = JSON.parse(data);
+				
+			}
+		);
+
+
+//php files
+
+add_action( 'wp_ajax_nopriv_mycustomfunction', 'mycustomfunction' ); //not logged
+add_action( 'wp_ajax_mycustomfunction', 'mycustomfunction' );			// loged
+function mycustomfunction() {
+	echo "testing";
+}
