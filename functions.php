@@ -1001,3 +1001,38 @@ add_action( 'wp_ajax_mycustomfunction', 'mycustomfunction' );			// loged
 function mycustomfunction() {
 	echo "testing";
 }
+
+
+/* contact form 7 add custom element*/
+add_action( 'wpcf7_init', 'custom_add_form_tag_clock' );
+function custom_add_form_tag_clock() {
+    /* this creates the shortcode [clock]that you cna use in contact form 7 like
+        [select clock "s" "b" "c"] or [text clock] or simply [clock]
+     *      */
+  wpcf7_add_form_tag( 'clock', 'custom_clock_form_tag_handler' ); // "clock" is the type of the form-tag
+}
+ 
+function custom_clock_form_tag_handler( $tag ) {
+    /* here is the shortcode function that you can edit to add custom stuff in form*/
+    /* !!NOTE: the name should be the same as the shortcode name
+            because when you submit when the email ius send it will get the 
+     *          values via the html select name value
+     *      */
+    $html = '<select name="clock" id="cars">
+  <option value="volvo">Volvo</option>
+  <option value="saab">Saab</option>
+  <option value="mercedes">Mercedes</option>
+  <option value="audi">Audi</option>
+</select>';
+    
+  return $html;
+}
+/* optional you cna use this to mke sure the email sends the value*/
+function my_special_mail_tag( $output, $name, $html ) {
+if ( '[clock]' == $name )
+$output = do_shortcode( "[$name]" );
+ 
+return $output;
+}
+add_filter( 'wpcf7_special_mail_tags', 'my_special_mail_tag', 10, 3 );
+/*end  contact form 7 add custom element*/
