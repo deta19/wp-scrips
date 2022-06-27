@@ -365,6 +365,142 @@ add_filter( 'wp_mail_from_name', 'wpb_sender_name' );
                         );
 
 
+
+<div class="change_language">
+<style type="text/css">
+
+.change_language {
+     width: 65px;
+     position: absolute;
+     top: 10px;
+     right: -40px;
+}
+.languageswitcher {
+     max-width: 65px;
+     width: 100%;
+     list-style: none;
+     display: inline-block;
+     background: #fff;
+     padding-left: 15px;
+     height: 35px;
+     line-height: 35px;
+     text-align: center;
+     border: 1px solid #d4d4d4;
+     padding: 0;
+     border-radius: 5px 5px;
+     margin: 0 0;
+     position: relative;
+     border-radius: 30px;
+}
+header .navbar .right ul.languageswitcher li.item {
+     padding: 0 0;
+}
+
+header .navbar .right ul.languageswitcher li.item a {
+     color: #000;
+}
+
+ul.languageswitcher li.item {
+     display: inline-block;
+     list-style: none;
+     padding: 0 0;
+     width: 100%;
+     text-align: center;
+}
+.languageswitcher .submenu {
+     display: none;
+     width: 65px;
+     list-style: none;
+     padding-left: 15px;
+     text-align: center;
+     border: 1px solid #d4d4d4;
+     padding: 0;
+     border-radius: 0 0 5px 5px;
+     border-bottom: 0;
+     background: #fff;
+     position: absolute;
+     top: 30px;
+     left: -1px;
+     overflow: hidden;
+}
+.languageswitcher .submenu .item {
+     display: inline-block;
+     list-style: none;
+     padding: 0;
+     width: 100%;
+}
+.languageswitcher .submenu .item {
+     display: inline-block;
+     list-style: none;
+     padding: 0;
+     width: 100%;
+}
+.languageswitcher .submenu .item a.active {
+     color: #A9AFB3;
+     position: relative;
+}
+
+.languageswitcher:hover {
+     border-radius: 5px 5px 0 0;
+}
+.languageswitcher:hover .submenu {
+     display: inline-block;
+}
+.languageswitcher .submenu .item a:hover {
+     color: #0082e6;
+}
+
+@media( max-width:  768px) {
+     .change_language {
+         width: 65px;
+         position: relative;
+         top: 15px;
+         right: 0;
+         float: right;
+         z-index: 0;
+     }
+     header .navbar .right #menu {
+         z-index: 1;
+     }
+}
+</style>
+<?php /* pll_the_languages( array( 'show_flags' => 1, 'show_names' => 1,  ) ); */ ?>
+<?php
+
+	$output = '';
+		    if ( function_exists( 'pll_the_languages' ) ) {
+			$args   = [
+			    'show_flags' => 1,
+			    'show_names' => 1,
+			    'echo'       => 0,
+			    'dropdown'   => 0,
+			    'raw' => 1
+			];
+			// var_dump(  pll_the_languages( $args ) );
+
+			$languages = pll_the_languages( $args ); 
+			$output = '<ul class="languageswitcher">';
+			$current_lang = '';
+			$all_the_languages = '';
+			foreach ($languages as $key => $language) {
+
+				// echo $language['flag'];
+				if( $language['current_lang'] ) {
+					$current_lang = '<li class="item current">'.$language['flag'].' '.$language['name'];
+				}
+				$all_the_languages .= '<li class="item"><a href="'.$language['url'].'">'.$language['flag'].' '.$language['name'].'</a></li>';
+			}
+			$output .= $current_lang . '<ul class="submenu">'.$all_the_languages.'</ul></li></ul>';
+		    }
+
+		    echo $output;
+		?>
+								
+</div>
+
+
+
+
 // Shortcode to creata a owl carousel with similar posts, taht can be used in article page
 //[similar_articles]
 function similar_articles_func( $atts ){
