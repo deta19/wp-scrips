@@ -1172,3 +1172,28 @@ return $output;
 }
 add_filter( 'wpcf7_special_mail_tags', 'my_special_mail_tag', 10, 3 );
 /*end  contact form 7 add custom element*/
+			
+			
+/*   redirect to homepage if not on pages */
+function redirect_if_access_loggedin_pages()
+{
+
+    $pages = array(
+        'account',
+        'matchings',
+        'messages',
+        'account-settings',
+        'payment',
+        'buy-credit'
+
+    );
+
+
+    if ( is_page( $pages ) )
+    {
+      $url = home_url();
+      wp_redirect( $url );
+      exit;
+    }
+}
+add_action('wp', 'redirect_if_access_loggedin_pages');
