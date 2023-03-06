@@ -144,6 +144,8 @@ function agentie() {
 		'capability_type'       => 'page',
 	);
 	register_post_type( 'agentie', $args );
+	
+	register_taxonomy("categories", array("agentie"), array("hierarchical" => true, "label" => "Categories", "singular_label" => "Category", "rewrite" => array( 'slug' => 'agentie', 'with_front'=> false )));
 
 }
 add_action( 'init', 'agentie', 0 );
