@@ -1,0 +1,5 @@
+dupa varianta 8++ trebuie sa stergi din pagina blockul de guthenbers si sa bagi shortcodeul
+[woocommerce_cart]
+
+
+acum tenoakteu din /woocommerce/cart/cart.php merge

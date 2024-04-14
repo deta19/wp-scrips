@@ -1,0 +1,3 @@
+[woocommerce_checkout]
+
+se emrge in pagina checkout si se sterge blockul guthenger si de adauga [woocommerce_checkout]
