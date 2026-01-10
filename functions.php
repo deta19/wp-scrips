@@ -32,6 +32,35 @@ function change_attachement_image_attributes( $attr, $attachment ){
     return $attr;
 }
 
+
+
+function add_middle_content_calltoaction() {
+
+	if( is_single() && 'post' == get_post_type() ) {
+?>
+<div class="call_to_action_section_cstm">
+	div content here
+</div>
+<script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function() {
+
+		var nrOfElements = document.querySelectorAll(".pagina p"); // get all elems of article page
+		var parentOfElements = document.querySelector(".pagina"); // get aprent of elements
+		var midlePosition = Math.round( nrOfElements.length / 2 ); // get mid element
+		var newElement = document.querySelector(".call_to_action_section_cstm");  // get element that will be added
+
+		parentOfElements.insertBefore(newElement,nrOfElements[midlePosition]);
+
+		document.getElementsByClassName("call_to_action_section_cstm")[0].classList.add('show');
+	});
+</script>
+<?php
+	}
+
+
+}
+add_action('wp_footer', 'add_middle_content_calltoaction');
+
 //get woocoommerce prices from widget
 function get_price_range_funtion_custom() {
  	$method = new ReflectionMethod("WC_Widget_Price_Filter" , "get_filtered_price");
